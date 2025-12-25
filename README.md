@@ -183,11 +183,11 @@ Visit:
 
 ## 👨‍💻 Author
 
-Teja Raviteja
+**Teja Raviteja**
+<br><br>
 Aspiring Backend / Full Stack Developer
-- Python
-- Django
-- REST APIs
-- SQL
 
-🔗 GitHub: https://github.com/tejaravi8
+### Social :
+🔗 GitHub:  [tejaravi8](https://github.com/tejaravi8) <br>
+🔗 LinkedIn: [ravitejabotsa](https://www.linkedin.com/in/ravitejabotsa) <br>
+🔗 Instagram: [teja41863](https://github.com/tejaravi8)
