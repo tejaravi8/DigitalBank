@@ -62,7 +62,7 @@ def register_view(request):
         user=user,
         account_number=str(user.id).zfill(10),
         account_type=data.get("account_type", "SAVINGS"),
-        balance=0.00
+        balance=100
     )
 
     token, _ = Token.objects.get_or_create(user=user)
