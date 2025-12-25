@@ -25,7 +25,15 @@ SECRET_KEY = 'django-insecure-dqbvd$ynnvu(-q6(j1xi&$9iba6m^t8*0u0yx7*=0&tx^3s34f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "digitalbank-xseh.onrender.com",
+    "localhost",
+    "127.0.0.1",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://digitalbank-xseh.onrender.com",
+]
 
 
 # Application definition
