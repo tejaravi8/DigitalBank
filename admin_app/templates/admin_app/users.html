@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bank Admin | Users</title>
+
+<style>
+/* -------------------- GLOBAL -------------------- */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #F3F4F6;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+h1, h2, p { margin: 0; }
+
+/* -------------------- SIDEBAR -------------------- */
+.sidebar {
+    width: 260px;
+    background: #0F172A;
+    color: white;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.brand-box {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.brand-title {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.nav-links a {
+    display: block;
+    padding: 12px 14px;
+    margin: 6px 0;
+    border-radius: 8px;
+    color: #CBD5F5;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.nav-links a:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+.admin-box {
+    background: rgba(255,255,255,0.1);
+    padding: 18px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+/* -------------------- MAIN -------------------- */
+.main {
+    flex: 1;
+    padding: 32px;
+    overflow-y: auto;
+}
+
+.top-header {
+    margin-bottom: 30px;
+}
+
+.top-header h1 {
+    font-size: 28px;
+    color: #1E293B;
+}
+
+/* -------------------- SECTION -------------------- */
+.section {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+/* -------------------- TABLE -------------------- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #F1F5F9;
+    padding: 14px;
+    text-align: left;
+    color: #475569;
+    font-size: 15px;
+}
+
+td {
+    padding: 14px;
+    border-bottom: 1px solid #E2E8F0;
+    font-size: 15px;
+    color: #334155;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.badge-green { background:#DCFCE7; color:#166534; }
+.badge-red { background:#FEE2E2; color:#991B1B; }
+.badge-yellow { background:#FEF3C7; color:#92400E; }
+
+.action-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    margin-right: 5px;
+}
+
+.btn-approve { background:#16A34A; color:white; }
+.btn-block { background:#DC2626; color:white; }
+.btn-view { background:#1E3A8A; color:white; }
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div>
+        <div class="brand-box">
+            <img src="https://img.icons8.com/color/96/bank-building.png"
+                 style="width:64px; margin-bottom:10px;">
+            <div class="brand-title">Digital Bank</div>
+            <small style="opacity:0.7;">Admin Panel</small>
+        </div>
+
+        <div class="nav-links">
+            <a href="/admin-panel/dashboard/">📊 Dashboard</a>
+            <a href="/admin-panel/users/">👥 Users</a>
+            <a href="/admin-panel/kyc/">🆔 KYC Approvals</a>
+            <a href="/admin-panel/accounts/">🏦 Accounts</a>
+            <a href="/admin-panel/transactions/">💸 Transactions</a>
+            <a href="/admin-panel/reports/">📁 Reports</a>
+        </div>
+    </div>
+
+    <div class="admin-box">
+        <strong>Admin</strong><br>
+        <small>Bank Staff</small>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <div class="top-header">
+        <h1>Users Management</h1>
+        <p style="color:#64748B; margin-top:6px;">
+            Manage customers, KYC status, and account access
+        </p>
+    </div>
+
+    <div class="section">
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>KYC Status</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+                <tbody>
+                {% for u in users %}
+                <tr id="user-row-{{ u.id }}">
+                
+                    <td>{{ u.username }}</td>
+                    <td>{{ u.email }}</td>
+                
+                    <!-- KYC -->
+                    <td>
+                        {% if u.profile %}
+                            {% if u.profile.kyc_status == "approved" %}
+                                <span class="badge badge-green">Approved</span>
+                            {% elif u.profile.kyc_status == "rejected" %}
+                                <span class="badge badge-red">Rejected</span>
+                            {% else %}
+                                <span class="badge badge-yellow">Pending</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="badge badge-yellow">Not Submitted</span>
+                        {% endif %}
+                    </td>
+                
+                    <!-- STATUS -->
+                    <td id="status-{{ u.id }}">
+                        {% if u.is_active %}
+                            <span class="badge badge-green">Active</span>
+                        {% else %}
+                            <span class="badge badge-red">Inactive</span>
+                        {% endif %}
+                    </td>
+                
+                    <!-- ACTIONS -->
+                    <td>
+                        {% if not u.is_superuser %}
+                            <button class="action-btn"
+                                    id="btn-{{ u.id }}"
+                                    style="background:{{ u.is_active|yesno:'#DC2626,#16A34A' }};color:white;"
+                                    onclick="toggleUser({{ u.id }})">
+                                {{ u.is_active|yesno:"Remove,Reactivate" }}
+                            </button>
+
+                            <button class="action-btn"
+                                    style="background:#7C2D12;color:white;"
+                                    onclick="deleteUser({{ u.id }})">
+                                Delete
+                            </button>
+                        {% else %}
+                            <span class="badge badge-green">Admin / Superuser</span>
+                        {% endif %}
+                            <button class="action-btn btn-view"
+                                    onclick="viewAccounts({{ u.id }})">
+                                View
+                            </button>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+<!-- USER + ACCOUNT DETAILS MODAL -->
+<div id="detailsModal" style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
+">
+
+    <div style="
+        background:white;
+        width:520px;
+        max-height:85vh;
+        overflow-y:auto;
+        border-radius:18px;
+        padding:28px;
+        box-shadow:0 15px 40px rgba(0,0,0,0.25);
+    ">
+
+        <h2 style="margin-bottom:18px;">User & Account Details</h2>
+
+        <!-- USER INFO -->
+        <div style="margin-bottom:20px;">
+            <h3 style="margin-bottom:10px;color:#1E293B;">User Information</h3>
+            <div id="userInfo" class="info-box"></div>
+        </div>
+
+        <!-- ACCOUNT INFO -->
+        <div>
+            <h3 style="margin-bottom:10px;color:#1E293B;">Bank Accounts</h3>
+            <div id="accountInfo"></div>
+        </div>
+
+        <button onclick="closeDetails()"
+                style="
+                    margin-top:20px;
+                    padding:12px 18px;
+                    background:#1E3A8A;
+                    color:white;
+                    border:none;
+                    border-radius:10px;
+                    cursor:pointer;
+                ">
+            Close
+        </button>
+    </div>
+</div>
+
+
+
+<script>
+    
+function updateKYC(userId) {
+    fetch("/admin-panel/api/kyc/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId, status: "approved" })
+    }).then(() => location.reload());
+}
+
+
+function toggleUser(userId) {
+    fetch("/admin-panel/api/users/toggle/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        alert(data.message);
+
+        const statusCell = document.getElementById("status-" + userId);
+        const btn = document.getElementById("btn-" + userId);
+
+        if (data.is_active) {
+            statusCell.innerHTML = `<span class="badge badge-green">Active</span>`;
+            btn.innerText = "Remove";
+            btn.style.background = "#DC2626";
+        } else {
+            statusCell.innerHTML = `<span class="badge badge-red">Inactive</span>`;
+            btn.innerText = "Reactivate";
+            btn.style.background = "#16A34A";
+        }
+    });
+}
+
+
+function viewAccounts(userId) {
+    fetch(`/admin-panel/api/user-details/?user=${userId}`)
+        .then(res => res.json())
+        .then(data => {
+
+            // USER INFO
+            document.getElementById("userInfo").innerHTML = `
+                <div class="info-card">
+                    <strong>Username:</strong> ${data.user.username}<br>
+                    <strong>Email:</strong> ${data.user.email}<br>
+                    <strong>Phone:</strong> ${data.user.phone}<br>
+                    <strong>Address:</strong> ${data.user.address || "Not provided"}<br>
+                    <strong>KYC Status:</strong> ${data.user.kyc_status}<br>
+                    <strong>Status:</strong> ${data.user.is_active ? "Active" : "Inactive"}
+                </div>
+            `;
+
+            // ACCOUNTS INFO
+            let accHtml = "";
+            if (data.accounts.length === 0) {
+                accHtml = "<p>No accounts found.</p>";
+            } else {
+                data.accounts.forEach(acc => {
+                    accHtml += `
+                        <div class="info-card">
+                            <strong>${acc.account_type} Account</strong><br>
+                            Account No: ${acc.account_number}<br>
+                            IFSC: ${acc.ifsc_code}<br>
+                            Branch: ${acc.branch_name}<br>
+                            Balance: ₹ ${acc.balance}<br>
+                            Created: ${acc.created_at}
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById("accountInfo").innerHTML = accHtml;
+            document.getElementById("detailsModal").style.display = "flex";
+        });
+}
+
+function closeDetails() {
+    document.getElementById("detailsModal").style.display = "none";
+}
+
+function deleteUser(userId) {
+
+    const confirm1 = confirm(
+        "⚠️ This will permanently delete the user.\nAll accounts & data will be lost.\n\nContinue?"
+    );
+
+    if (!confirm1) return;
+
+    const confirm2 = prompt(
+        "Type DELETE to confirm permanent removal:"
+    );
+
+    if (confirm2 !== "DELETE") {
+        alert("Deletion cancelled");
+        return;
+    }
+
+    fetch("/admin-panel/api/users/delete/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+
+        alert(data.message);
+
+        // 🧹 Remove row from UI instantly
+        const row = document.getElementById("user-row-" + userId);
+        row.remove();
+    });
+}
+
+</script>
+
+</body>
+</html>

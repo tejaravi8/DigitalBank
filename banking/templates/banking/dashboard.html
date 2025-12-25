@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Digital Bank | Dashboard</title>
+<link rel="icon" type="image/x-icon" href="https://img.icons8.com/color/96/bank-building.png">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+/* -------------------- GLOBAL -------------------- */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #F3F4F6;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+h1, h2, h3, h4, p { margin: 0; }
+
+/* -------------------- SIDEBAR -------------------- */
+.sidebar {
+    width: 250px;
+    background: #1E3A8A;
+    color: white;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.brand-box {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.brand-logo {
+    width: 70px;
+    margin-bottom: 10px;
+}
+
+.brand-title {
+    font-size: 23px;
+    font-weight: bold;
+}
+
+.nav-links {
+    margin-top: 20px;
+}
+
+.nav-links a {
+    display: block;
+    color: #DCE3FF;
+    text-decoration: none;
+    padding: 12px 14px;
+    margin: 5px 0;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.nav-links a:hover {
+    background: rgba(255,255,255,0.15);
+    color: white;
+}
+
+.user-box {
+    padding: 20px 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+    text-align: center;
+}
+
+.user-name {
+    font-size: 16px;
+    margin-top: 5px;
+    font-weight: 600;
+}
+
+/* -------------------- MAIN -------------------- */
+.main {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.top-header {
+    margin-bottom: 30px;
+}
+
+.top-header h1 {
+    font-size: 28px;
+    color: #1E293B;
+}
+
+/* -------------------- CARDS -------------------- */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.stat-info h3 {
+    font-size: 18px;
+    color: #1E293B;
+}
+
+.stat-info p {
+    font-size: 14px;
+    color: #64748B;
+}
+
+/* -------------------- CHART -------------------- */
+.chart-box {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+.chart-title {
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #1E293B;
+}
+
+/* -------------------- ACCOUNTS -------------------- */
+.account-box {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+}
+
+.acc-row {
+    background: #F8FAFC;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-top: 12px;
+}
+
+/* -------------------- KYC -------------------- */
+#kycBanner {
+    display: none;
+    background: #FEE2E2;
+    padding: 12px;
+    border-radius: 10px;
+    color: #B91C1C;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div>
+        <div class="brand-box">
+            <img src="https://img.icons8.com/color/96/bank-building.png" class="brand-logo">
+            <div class="brand-title">Digital Bank</div>
+        </div>
+
+        <div class="nav-links">
+            <a href="/dashboard/">🏠 Dashboard</a>
+            <a href="/api/profile/">👤 Profile</a>
+            <a href="/api/transfers/">💸 Money Transfers</a>
+            <a href="/api/settings/">⚙ Settings</a>
+        </div>
+    </div>
+
+    <div class="user-box">
+        <div class="user-name" id="username">Loading...</div>
+        <small>Logged in user</small>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <div id="kycBanner">⚠️ KYC Pending — Complete to unlock all features</div>
+
+    <div class="top-header">
+        <h1>Dashboard Overview</h1>
+    </div>
+
+    <!-- STATS -->
+ <div class="stats-row">
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <img src="https://img.icons8.com/fluency/48/wallet.png">
+            </div>
+            <div class="stat-info">
+                <h3>Your Balance</h3>
+                <p id="totalBalance">₹ 0.00</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <img src="https://img.icons8.com/fluency/48/money-transfer.png">
+            </div>
+            <div class="stat-info">
+                <h3>Total Deposits</h3>
+                <p id="totalDeposits">₹ -</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <img src="https://img.icons8.com/fluency/48/receive-cash.png">
+            </div>
+            <div class="stat-info">
+                <h3>Total Withdrawals</h3>
+                <p id="totalWithdrawals">₹ -</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <img src="https://img.icons8.com/fluency/48/transaction-list.png">
+            </div>
+            <div class="stat-info">
+                <h3>Transactions</h3>
+                <p id="transactionCount">-</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CHART -->
+    <div class="chart-box">
+        <div class="chart-title">📈 Deposits & Expenses Trend</div>
+        <canvas id="txnChart" height="120"></canvas>
+    </div>
+
+    <!-- ACCOUNTS -->
+    <div class="account-box" id="accountsBox">
+        <h2>Your Accounts</h2>
+    </div>
+
+</div>
+
+<script>
+const token = localStorage.getItem("token");
+let txnChart = null;
+
+/* LOAD USER + ACCOUNTS */
+async function loadDashboard() {
+    const res = await fetch("/api/auth/me/", {
+        headers: { "Authorization": "Token " + token }
+    });
+
+    const data = await res.json();
+    document.getElementById("username").innerText = data.username;
+
+    let html = "";
+    data.accounts.forEach(acc => {
+        html += `
+            <div class="acc-row">
+                <strong>${acc.account_type}</strong><br>
+                Account No: ${acc.account_number}<br>
+                Balance: ₹${acc.balance}
+            </div>
+        `;
+    });
+
+    document.getElementById("accountsBox").innerHTML += html;
+}
+
+/* LOAD DASHBOARD SUMMARY + CHART */
+async function loadDashboardSummary() {
+    const res = await fetch("/api/dashboard/summary/", {
+        headers: { "Authorization": "Token " + token }
+    });
+
+    const data = await res.json();
+
+    // Numbers
+    document.getElementById("totalBalance").innerText =
+        "₹ " + data.balance.toFixed(2);
+
+    document.getElementById("totalDeposits").innerText =
+        "₹ " + data.total_deposits.toFixed(2);
+
+    document.getElementById("totalWithdrawals").innerText =
+        "₹ " + data.total_withdrawals.toFixed(2);
+
+    document.getElementById("transactionCount").innerText =
+        data.transaction_count;
+
+    // Chart
+    const ctx = document.getElementById("txnChart");
+
+    if (txnChart) txnChart.destroy(); // avoid duplicate chart
+
+    txnChart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: data.chart.labels,
+            datasets: [
+                {
+                    label: "Deposits",
+                    data: data.chart.credits,
+                    borderColor: "#16A34A",
+                    backgroundColor: "rgba(22,163,74,0.2)",
+                    tension: 0.4
+                },
+                {
+                    label: "Withdrawals",
+                    data: data.chart.debits,
+                    borderColor: "#DC2626",
+                    backgroundColor: "rgba(220,38,38,0.2)",
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: "top" }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+}
+
+loadDashboard();
+loadDashboardSummary();
+</script>
+
+</body>
+</html>

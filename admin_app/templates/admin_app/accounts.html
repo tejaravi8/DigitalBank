@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bank Admin | Accounts</title>
+
+<style>
+/* ---------- GLOBAL ---------- */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #F3F4F6;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+h1, p { margin: 0; }
+
+/* ---------- SIDEBAR ---------- */
+.sidebar {
+    width: 260px;
+    background: #0F172A;
+    color: white;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.brand-box { text-align: center; margin-bottom: 40px; }
+.brand-title { font-size: 22px; font-weight: bold; }
+
+.nav-links a {
+    display: block;
+    padding: 12px 14px;
+    margin: 6px 0;
+    border-radius: 8px;
+    color: #CBD5F5;
+    text-decoration: none;
+    font-size: 16px;
+}
+.nav-links a:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+.admin-box {
+    background: rgba(255,255,255,0.1);
+    padding: 18px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+/* ---------- MAIN ---------- */
+.main {
+    flex: 1;
+    padding: 32px;
+    overflow-y: auto;
+}
+
+.top-header {
+    margin-bottom: 25px;
+}
+
+.top-header h1 {
+    font-size: 28px;
+    color: #1E293B;
+}
+
+/* ---------- TABLE ---------- */
+.section {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    padding: 12px;
+    background: #F1F5F9;
+    color: #475569;
+    font-size: 15px;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #E2E8F0;
+    font-size: 14px;
+    color: #334155;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.system { background: #E0E7FF; color: #3730A3; }
+.savings { background: #DCFCE7; color: #166534; }
+.current { background: #FEF3C7; color: #92400E; }
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div>
+        <div class="brand-box">
+            <img src="https://img.icons8.com/color/96/bank-building.png"
+                style="width:64px; margin-bottom:10px;">
+                
+            <div class="brand-title">Digital Bank</div>
+            <small style="opacity:0.7;">Admin Panel</small>
+        </div>
+
+
+        <div class="nav-links">
+            <a href="/admin-panel/dashboard/">📊 Dashboard</a>
+            <a href="/admin-panel/users/">👥 Users</a>
+            <a href="/admin-panel/kyc/">🆔 KYC Approvals</a>
+            <a href="/admin-panel/accounts/">🏦 Accounts</a>
+            <a href="/admin-panel/transactions/">💸 Transactions</a>
+            <a href="/admin-panel/reports/">📁 Reports</a>
+        </div>
+    </div>
+
+    <div class="admin-box">
+        <strong>Admin</strong><br>
+        <small>Bank Staff</small>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <div class="top-header">
+        <h1>Accounts Management</h1>
+        <p style="color:#64748B; margin-top:6px;">
+            View all bank and customer accounts
+        </p>
+    </div>
+
+    <div class="section">
+        <table>
+            <thead>
+                <tr>
+                    <th>Account No</th>
+                    <th>Type</th>
+                    <th>Owner</th>
+                    <th>Balance</th>
+                    <th>IFSC</th>
+                    <th>Branch</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for acc in accounts %}
+                <tr>
+                    <td>{{ acc.account_number }}</td>
+                    <td>
+                        <span class="badge {{ acc.account_type|lower }}">
+                            {{ acc.account_type }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if acc.is_system_account %}
+                            BANK
+                        {% else %}
+                            {{ acc.user.username }}
+                        {% endif %}
+                    </td>
+                    <td>₹ {{ acc.balance }}</td>
+                    <td>{{ acc.ifsc_code }}</td>
+                    <td>{{ acc.branch_name }}</td>
+                    <td>{{ acc.created_at|date:"Y-m-d" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">No accounts found</td>
+                </tr>
+                {% endfor %}
+
+                
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

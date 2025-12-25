@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Digital Bank | Money Transfers</title>
+<link rel="icon" type="image/x-icon" href="https://img.icons8.com/color/96/bank-building.png">
+
+
+<style>
+/* -------------------- GLOBAL -------------------- */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #F3F4F6;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+h1, h2 { margin: 0; }
+
+/* -------------------- SIDEBAR -------------------- */
+.sidebar {
+    width: 250px;
+    background: #1E3A8A;
+    color: white;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.brand-box {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.brand-logo {
+    width: 70px;
+    margin-bottom: 10px;
+}
+
+.brand-title {
+    font-size: 23px;
+    font-weight: bold;
+}
+
+.nav-links a {
+    display: block;
+    color: #DCE3FF;
+    text-decoration: none;
+    padding: 12px 14px;
+    margin: 5px 0;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.nav-links a:hover {
+    background: rgba(255,255,255,0.15);
+    color: white;
+}
+
+.user-box {
+    padding: 20px 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+    text-align: center;
+}
+
+.user-name {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* -------------------- MAIN -------------------- */
+.main {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.top-header {
+    margin-bottom: 30px;
+}
+
+.top-header h1 {
+    font-size: 28px;
+    color: #1E293B;
+}
+
+/* -------------------- OPTIONS -------------------- */
+.option-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.option-card {
+    background: white;
+    padding: 18px;
+    border-radius: 16px;
+    text-align: center;
+    font-size: 15px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+    cursor: pointer;
+    user-select: none;
+}
+
+.option-card img {
+    width: 40px;
+    margin-bottom: 8px;
+}
+
+.option-card.active {
+    border: 2px solid #1E3A8A;
+}
+
+/* -------------------- ACTION CARD -------------------- */
+.big-card {
+    background: white;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.05);
+    min-height: 420px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+form {
+    width: 360px;
+}
+
+form h2 {
+    color: #1E3A8A;
+    margin-bottom: 15px;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #CBD5E1;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.btn {
+    width: 100%;
+    padding: 14px;
+    background: #1E3A8A;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #17347A;
+}
+
+.placeholder-text {
+    font-size: 20px;
+    color: #6B7280;
+}
+
+/* -------------------- ALERT -------------------- */
+.alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 16px 22px;
+    border-radius: 10px;
+    background: #059669;
+    color: white;
+    font-size: 15px;
+    display: none;
+    z-index: 999;
+}
+
+.alert.error {
+    background: #DC2626;
+}
+
+/* -------------------- LOADER -------------------- */
+.loader {
+    display: none;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #64748B;
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div>
+        <div class="brand-box">
+            <img src="https://img.icons8.com/color/96/bank-building.png" class="brand-logo">
+            <div class="brand-title">Digital Bank</div>
+        </div>
+
+        <div class="nav-links">
+            <a href="/dashboard/">🏠 Dashboard</a>
+            <a href="/api/profile/">👤 Profile</a>
+            <a href="/api/transfers/">💸 Money Transfers</a>
+            <a href="/api/settings/">⚙ Settings</a>
+        </div>
+    </div>
+
+    <div class="user-box">
+        <div class="user-name" id="username">Loading...</div>
+        <small>Logged in user</small>
+    </div>
+</div>
+
+<!-- ALERT -->
+<div class="alert" id="alertBox"></div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <div class="top-header">
+        <h1>Money Transfers</h1>
+    </div>
+
+    <!-- OPTIONS -->
+    <div class="option-row">
+        <div class="option-card" id="optMobile" onclick="showMobile()">
+            <img src="https://img.icons8.com/fluency/48/iphone.png">
+            To Mobile
+        </div>
+        <div class="option-card" id="optBank" onclick="showBank()">
+            <img src="https://img.icons8.com/fluency/48/bank-building.png">
+            To Account
+        </div>
+        <div class="option-card" id="optBills" onclick="showBills()">
+            <img src="https://img.icons8.com/fluency/48/bill.png">
+            Pay Bills
+        </div>
+        <div class="option-card" id="optRequest" onclick="showRequest()">
+            <img src="https://img.icons8.com/fluency/48/request-money.png">
+            Request Money
+        </div>
+        <div class="option-card" id="optSI" onclick="showStanding()">
+            <img src="https://img.icons8.com/fluency/48/recurring-appointment.png">
+            Standing Instructions
+        </div>
+    </div>
+
+    <!-- ACTION -->
+    <div class="big-card" id="actionArea">
+        <div class="placeholder-text">Select an option above</div>
+    </div>
+
+</div>
+
+<script>
+async function loadUser() {
+    const res = await fetch("/api/auth/me/", {
+        headers: { "Authorization": "Token " + localStorage.getItem("token") }
+    });
+    const data = await res.json();
+    username.innerText = data.username;
+}
+loadUser();
+
+function showAlert(msg, type="success") {
+    alertBox.innerText = msg;
+    alertBox.className = "alert " + (type === "error" ? "error" : "");
+    alertBox.style.display = "block";
+    setTimeout(() => alertBox.style.display = "none", 2500);
+}
+
+function clearActive() {
+    document.querySelectorAll(".option-card").forEach(c => c.classList.remove("active"));
+}
+
+/* ---------------- FORMS ---------------- */
+
+function showMobile() {
+    clearActive();
+    optMobile.classList.add("active");
+
+    actionArea.innerHTML = `
+        <form onsubmit="sendToMobile(event)">
+            <h2>Send to Mobile</h2>
+            <input id="mobileNum" placeholder="Mobile Number" required>
+            <input id="mobileAmt" placeholder="Amount" required>
+            <button class="btn">Send Money</button>
+            <div class="loader" id="loadMobile">Processing...</div>
+        </form>
+    `;
+}
+
+function showBank() {
+    clearActive();
+    optBank.classList.add("active");
+
+    actionArea.innerHTML = `
+        <form onsubmit="sendToBank(event)">
+            <h2>Send to Bank Account</h2>
+            <input id="bankAcc" placeholder="Account Number" required>
+            <input id="bankIFSC" placeholder="IFSC Code" required>
+            <input id="bankAmt" placeholder="Amount" required>
+            <button class="btn">Send Money</button>
+            <div class="loader" id="loadBank">Processing...</div>
+        </form>
+    `;
+}
+
+function showBills() { clearActive(); optBills.classList.add("active"); actionArea.innerHTML = `<div class="placeholder-text">🧾 Bill Payments Coming Soon</div>`; }
+function showRequest() { clearActive(); optRequest.classList.add("active"); actionArea.innerHTML = `<div class="placeholder-text">💸 Request Money Coming Soon</div>`; }
+function showStanding() { clearActive(); optSI.classList.add("active"); actionArea.innerHTML = `<div class="placeholder-text">🔁 Standing Instructions Coming Soon</div>`; }
+
+/* ---------------- API ---------------- */
+
+async function sendToMobile(e) {
+    e.preventDefault();
+    loadMobile.style.display = "block";
+
+    const res = await fetch("/api/transfers/mobile/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Token " + localStorage.getItem("token")
+        },
+        body: JSON.stringify({
+            mobile: mobileNum.value,
+            amount: mobileAmt.value
+        })
+    });
+
+    loadMobile.style.display = "none";
+    const data = await res.json();
+
+    res.ok ? showAlert("Money sent successfully!") : showAlert(data.error || "Transfer failed", "error");
+}
+
+async function sendToBank(e) {
+    e.preventDefault();
+    loadBank.style.display = "block";
+
+    const res = await fetch("/api/transfers/account/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Token " + localStorage.getItem("token")
+        },
+        body: JSON.stringify({
+            to_account_number: bankAcc.value,
+            ifsc: bankIFSC.value,
+            amount: bankAmt.value
+        })
+    });
+
+    loadBank.style.display = "none";
+    const data = await res.json();
+
+    res.ok ? showAlert("Bank transfer successful!") : showAlert(data.error || "Transfer failed", "error");
+}
+</script>
+
+</body>
+</html>
